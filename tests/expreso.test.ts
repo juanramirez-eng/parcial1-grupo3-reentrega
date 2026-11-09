@@ -21,4 +21,14 @@ describe("Expreso", () => {
         expect(e.precioBase).toBe(2500);
         expect(e.nombre).toBe("Expreso pocillo Brasil");
     });
+
+    it("lanza error con un tamano invalido", () => {
+        // @ts-expect-error probamos un valor fuera del tipo
+        expect(() => new Expreso("e1", "gigante", "Brasil")).toThrow("tamano");
+    });
+
+    it("lanza error con una variedad invalida", () => {
+        // @ts-expect-error probamos un valor fuera del tipo
+        expect(() => new Expreso("e1", "pocillo", "Kenia")).toThrow("variedad");
+    });
 });
