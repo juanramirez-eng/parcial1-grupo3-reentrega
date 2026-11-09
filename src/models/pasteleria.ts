@@ -1,10 +1,6 @@
-export class Pasteleria {
-    constructor(
-        public readonly id: string,
-        public readonly nombre: string,
-        public readonly precioBase: number,
-    ) { }
+import { Producto } from "./producto";
 
+export class Pasteleria extends Producto {
     calcularPrecio(): number {
         return this.precioBase;
     }
