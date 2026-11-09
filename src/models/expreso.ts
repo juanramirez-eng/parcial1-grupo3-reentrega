@@ -13,6 +13,8 @@ export class Expreso extends Producto {
         public readonly variedad: Variedad,
     ) {
         super(id, `Expreso ${tamano} ${variedad}`, 2500);
+        if (!(tamano in GRAMOS)) throw new Error(`tamano invalido: ${tamano}`);
+        if (!(variedad in PRECIO_POR_GRAMO)) throw new Error(`variedad invalida: ${variedad}`);
     }
 
     calcularPrecio(): number {
