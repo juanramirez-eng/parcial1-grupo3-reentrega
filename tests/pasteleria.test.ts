@@ -13,4 +13,8 @@ describe("Pasteleria", () => {
         expect(new Pasteleria("p1", "Muffin de chocolate", 2500).calcularPrecio()).toBe(2500);
         expect(new Pasteleria("p2", "Torta selva negra", 4200).calcularPrecio()).toBe(4200);
     });
+
+    it("lanza error si el precioBase es negativo", () => {
+        expect(() => new Pasteleria("p1", "Muffin", -1)).toThrow("precioBase");
+    });
 });
