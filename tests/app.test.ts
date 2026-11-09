@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { app } from "../scr/app";
+import { app } from "../src/app";
 
 describe("app", () => {
     it("responde 404 con un mensaje de error en una ruta inexistente", async () => {
