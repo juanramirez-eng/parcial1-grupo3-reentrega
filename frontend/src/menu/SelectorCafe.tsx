@@ -9,6 +9,7 @@ import {
     type Tamano,
 } from "../api/schemas";
 import { buscarCafe, esCafe, type ProductoCafe } from "./buscarCafe";
+import { formatoPrecio } from "./formatoPrecio";
 
 const ETIQUETA_BEBIDA: Record<Bebida, string> = {
     expreso: "Expreso",
@@ -42,6 +43,11 @@ export function SelectorCafe({ productos }: Props) {
     function descripcionDe(origenCafe: Origen): string | undefined {
         return cafes.find((cafe) => cafe.variedad.nombre === origenCafe)?.variedad
             .descripcion;
+    }
+
+    function precioDe(origenCafe: Origen): number | undefined {
+        if (bebida === null || tamano === null) return undefined;
+        return buscarCafe(productos, { bebida, tamano, origen: origenCafe })?.precio;
     }
 
     const cafeElegido =
@@ -85,18 +91,22 @@ export function SelectorCafe({ productos }: Props) {
 
             <fieldset>
                 <legend>3. Origen</legend>
-                {ORIGENES.map((o) => (
-                    <label key={o}>
-                        <input
-                            type="radio"
-                            name="origen"
-                            checked={origen === o}
-                            onChange={() => setOrigen(o)}
-                        />
-                        <span>{ETIQUETA_ORIGEN[o]}</span>
-                        <small>{descripcionDe(o)}</small>
-                    </label>
-                ))}
+                {ORIGENES.map((o) => {
+                    const precio = precioDe(o);
+                    return (
+                        <label key={o}>
+                            <input
+                                type="radio"
+                                name="origen"
+                                checked={origen === o}
+                                onChange={() => setOrigen(o)}
+                            />
+                            <span>{ETIQUETA_ORIGEN[o]}</span>
+                            <small>{descripcionDe(o)}</small>
+                            {precio !== undefined && <strong>{formatoPrecio(precio)}</strong>}
+                        </label>
+                    );
+                })}
             </fieldset>
 
             <button type="button" disabled={cafeElegido === undefined}>
