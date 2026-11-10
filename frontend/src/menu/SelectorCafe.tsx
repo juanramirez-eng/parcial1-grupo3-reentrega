@@ -9,24 +9,8 @@ import {
     type Tamano,
 } from "../api/schemas";
 import { buscarCafe, esCafe, type ProductoCafe } from "./buscarCafe";
+import { ETIQUETA_BEBIDA, ETIQUETA_ORIGEN, ETIQUETA_TAMANO } from "./etiquetas";
 import { formatoPrecio } from "./formatoPrecio";
-
-const ETIQUETA_BEBIDA: Record<Bebida, string> = {
-    expreso: "Expreso",
-    filtrado: "Filtrado",
-};
-
-const ETIQUETA_TAMANO: Record<Tamano, string> = {
-    pocillo: "Pocillo",
-    mediano: "Mediano",
-    "taza grande": "Taza grande",
-};
-
-const ETIQUETA_ORIGEN: Record<Origen, string> = {
-    Colombia: "Colombia",
-    Etiopia: "Etiopía",
-    Brasil: "Brasil",
-};
 
 type Props = {
     productos: Producto[];
