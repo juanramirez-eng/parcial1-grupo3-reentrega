@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { leerMesa } from './leerMesa'
+import { leerMesa } from '../mesa/leerMesa'
 
 describe('leerMesa', () => {
   it('devuelve el numero de mesa del parametro ?mesa=', () => {
