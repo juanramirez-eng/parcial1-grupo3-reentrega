@@ -1,6 +1,12 @@
 import { CatalogoService } from "./catalogo.service.js";
 import type { PedidoService } from "./pedido.service.js";
 
+export interface ProductoVendido {
+  productoId: number;
+  nombre: string;
+  cantidad: number;
+}
+
 export class ReportesService {
   constructor(
     private pedidos: PedidoService,
@@ -29,6 +35,26 @@ export class ReportesService {
     return this.pedidos
       .listarPedidos()
       .reduce((acumulado, pedido) => acumulado + pedido.total, 0);
+  }
+
+    // Productos con mayor cantidad vendida; en caso de empate devuelve todos
+  masVendidos(): ProductoVendido[] {
+    const cantidades = this.cantidadesVendidas();
+
+    if (cantidades.size === 0) {
+      return [];
+    }
+
+    const maximo = Math.max(...cantidades.values());
+
+    return Array.from(cantidades)
+      .filter(([, cantidad]) => cantidad === maximo)
+      .sort(([idA], [idB]) => idA - idB)
+      .map(([productoId, cantidad]) => ({
+        productoId,
+        nombre: this.catalogo.obtenerPorId(productoId)?.nombre ?? "",
+        cantidad,
+      }));
   }
 
 }
