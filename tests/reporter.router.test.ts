@@ -39,5 +39,42 @@ describe("Rutas de reportes (/reportes)", () => {
     });
   });
 
-  // (acá va el bloque de mas-vendidos)
+    describe("GET /reportes/mas-vendidos", () => {
+    it("devuelve status 200 y el producto más vendido sumando cantidades", async () => {
+      pedidos.crearPedido([{ productoId: "2", cantidad: 2 }]);
+      pedidos.crearPedido([
+        { productoId: "2", cantidad: 3 },
+        { productoId: "19", cantidad: 4 },
+      ]);
+
+      const res = await request(app).get("/reportes/mas-vendidos");
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual([
+        { productoId: 2, nombre: "Expreso Colombia pocillo", cantidad: 5 },
+      ]);
+    });
+
+    it("devuelve todos los productos empatados", async () => {
+      pedidos.crearPedido([
+        { productoId: "10", cantidad: 2 },
+        { productoId: "20", cantidad: 2 },
+      ]);
+
+      const res = await request(app).get("/reportes/mas-vendidos");
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual([
+        { productoId: 10, nombre: "Filtrado Brasil pocillo", cantidad: 2 },
+        { productoId: 20, nombre: "Porción de torta selva negra", cantidad: 2 },
+      ]);
+    });
+
+    it("devuelve una lista vacía si no hay ventas", async () => {
+      const res = await request(app).get("/reportes/mas-vendidos");
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual([]);
+    });
+  });
 });
