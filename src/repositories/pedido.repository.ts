@@ -36,6 +36,7 @@ export class PedidoRepository {
   }
 
   limpiar(): void {
-    this.pedidos = [];
-  }
+  this.pedidos = [];
+  this.siguienteId = 1;
+}
 }
