@@ -1,10 +1,11 @@
-import "./polyfill";
+import "./pollyfill.ts";
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
-import { fetchProductos } from "../services/apiClient";
+import { fetchProductos, crearPedido, obtenerPedido } from "../services/apiClient";
 
 const API_URL = "http://localhost:3000/productos";
+const PEDIDOS_URL = "http://localhost:3000/pedidos";
 
 const mockProductos = [
     { id: 1, tipo: "expreso", nombre: "Expreso Pocillo", precio: 5020 },
@@ -47,4 +48,33 @@ describe("apiClient - fetchProductos", () => {
         );
         await expect(fetchProductos()).rejects.toThrow("Error de conexión con el servidor");
     });
+describe("apiClient - crearPedido", () => {
+    it("crea un pedido y devuelve los datos de la API", async () => {
+        const mockPedido = {
+            id: "1",
+            mesaId: 4,
+            items: [
+                {
+                    productoId: "1",
+                    cantidad: 2,
+                },
+            ],
+            estado: "pendiente",
+            total: 10040,
+        };
+
+        server.use(
+            http.post(PEDIDOS_URL, () => {
+                return HttpResponse.json(mockPedido, { status: 201 });
+            }),
+        );
+
+        const pedido = await crearPedido({
+            mesaId: 4,
+            items: [{ productoId: "1", cantidad: 2 }],
+        });
+
+        expect(pedido).toEqual(mockPedido);
+    });
+});
 });
