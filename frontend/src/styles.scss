@@ -1,0 +1,16 @@
+$primary: #6f4e37;
+$secondary: #d9c2a7;
+$body-bg: #f8f5f1;
+$body-color: #2f2a26;
+
+@import "bootstrap/scss/bootstrap";
+
+body {
+  margin: 0;
+  background: $body-bg;
+  color: $body-color;
+}
+
+#root {
+  min-height: 100vh;
+}
