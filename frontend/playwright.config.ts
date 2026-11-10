@@ -10,14 +10,14 @@ export default defineConfig({
 
   webServer: [
     {
-      command: "npm start",
-      cwd: "..",
-      url: "http://localhost:3000/productos",
-      env: {
-        NODE_ENV: "test",
-      },
-      reuseExistingServer: true,
-    },
+  command: "npm start",
+  cwd: "..",
+  url: "http://localhost:3000/productos",
+  env: {
+    NODE_ENV: "test",
+  },
+  reuseExistingServer: false,
+},
     {
       command: "npm run dev -- --host 127.0.0.1",
       cwd: ".",
