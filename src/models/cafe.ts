@@ -5,6 +5,12 @@ export type Variedad = "Brasil" | "Colombia" | "Etiopia";
 
 const PRECIO_POR_GRAMO: Record<Variedad, number> = { Brasil: 140, Colombia: 180, Etiopia: 240 };
 
+const DESCRIPCION_POR_VARIEDAD: Record<Variedad, string> = {
+    Colombia: "Acidez media, cuerpo equilibrado y notas cítricas y florales",
+    Etiopia: "Acidez muy viva, cuerpo ligero y notas frutales",
+    Brasil: "Acidez baja, cuerpo denso y notas de avellana",
+};
+
 export abstract class Cafe extends Producto {
     constructor(
         id: string,
@@ -17,6 +23,10 @@ export abstract class Cafe extends Producto {
         super(id, `${tipo} ${tamano} ${variedad}`, precioBase);
         if (!(tamano in gramosPorTamano)) throw new Error(`tamano invalido: ${tamano}`);
         if (!(variedad in PRECIO_POR_GRAMO)) throw new Error(`variedad invalida: ${variedad}`);
+    }
+
+    get descripcionVariedad(): string {
+        return DESCRIPCION_POR_VARIEDAD[this.variedad];
     }
 
     calcularPrecio(): number {

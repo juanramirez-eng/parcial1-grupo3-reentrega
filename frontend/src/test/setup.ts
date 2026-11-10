@@ -1,6 +1,13 @@
 import "@testing-library/jest-dom/vitest";
+import { cleanup } from "@testing-library/react";
+import { afterEach } from "vitest";
 
-// Polyfill de Map.groupBy y Object.groupBy para compatibilidad con MSW 2
+// Limpieza automática del DOM después de cada prueba (traído de main)
+afterEach(() => {
+    cleanup();
+});
+
+// Polyfill de Map.groupBy para compatibilidad con MSW 2 / Vitest 3
 if (!("groupBy" in Map)) {
     // @ts-expect-error polyfill para entornos sin soporte nativo de Map.groupBy
     Map.groupBy = <K, T>(items: Iterable<T>, callback: (item: T, index: number) => K): Map<K, T[]> => {
@@ -19,6 +26,7 @@ if (!("groupBy" in Map)) {
     };
 }
 
+// Polyfill de Object.groupBy
 if (!("groupBy" in Object)) {
     // @ts-expect-error polyfill para Object.groupBy
     Object.groupBy = <K extends PropertyKey, T>(items: Iterable<T>, callback: (item: T, index: number) => K): Partial<Record<K, T[]>> => {
