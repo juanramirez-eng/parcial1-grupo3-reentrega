@@ -1,3 +1,4 @@
+
 import {
   CatalogoResponseSchema,
   type Producto,
@@ -37,6 +38,16 @@ async function obtenerMensajeError(
   return mensajeDefault;
 }
 
+export interface ItemPedido {
+  productoId: string;
+  cantidad: number;
+}
+
+export interface CrearPedidoDTO {
+  mesaId: number | null;
+  items: ItemPedido[];
+}
+
 export async function fetchProductos(): Promise<Producto[]> {
   let response: Response;
 
@@ -69,16 +80,8 @@ export async function fetchProductos(): Promise<Producto[]> {
   return parsed.data;
 }
 
-interface CrearPedidoInput {
-  mesaId: number | null;
-  items: {
-    productoId: string;
-    cantidad: number;
-  }[];
-}
-
 export async function crearPedido(
-  datos: CrearPedidoInput,
+  datos: CrearPedidoDTO,
 ): Promise<Pedido> {
   let response: Response;
 
@@ -117,7 +120,7 @@ export async function crearPedido(
   return parsed.data;
 }
 
-export async function fetchPedido(id: string): Promise<Pedido> {
+export async function obtenerPedido(id: string): Promise<Pedido> {
   let response: Response;
 
   try {
