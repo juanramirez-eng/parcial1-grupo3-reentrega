@@ -48,6 +48,7 @@ describe("apiClient - fetchProductos", () => {
         );
         await expect(fetchProductos()).rejects.toThrow("Error de conexión con el servidor");
     });
+
 describe("apiClient - crearPedido", () => {
     it("crea un pedido y devuelve los datos de la API", async () => {
         const mockPedido = {
@@ -76,8 +77,61 @@ describe("apiClient - crearPedido", () => {
 
         expect(pedido).toEqual(mockPedido);
     });
+
+    
+it("informa el error 400 devuelto por la API", async () => {
+    server.use(
+        http.post(PEDIDOS_URL, () =>
+            HttpResponse.json(
+                { error: "La cantidad debe ser un entero mayor a cero" },
+                { status: 400 },
+            ),
+        ),
+    );
+
+    await expect(
+        crearPedido({
+            mesaId: 4,
+            items: [{ productoId: "1", cantidad: 0 }],
+        }),
+    ).rejects.toThrow("La cantidad debe ser un entero mayor a cero");
 });
+
+it("informa el error 404 devuelto por la API", async () => {
+    server.use(
+        http.post(PEDIDOS_URL, () =>
+            HttpResponse.json(
+                { error: "El producto no existe" },
+                { status: 404 },
+            ),
+        ),
+    );
+
+    await expect(
+        crearPedido({
+            mesaId: 4,
+            items: [{ productoId: "999", cantidad: 1 }],
+        }),
+    ).rejects.toThrow("El producto no existe");
+});
+
+it("informa un error cuando falla la conexión", async () => {
+    server.use(
+        http.post(PEDIDOS_URL, () => HttpResponse.error()),
+    );
+
+    await expect(
+        crearPedido({
+            mesaId: 4,
+            items: [{ productoId: "1", cantidad: 1 }],
+        }),
+    ).rejects.toThrow("Error de conexión con el servidor");
+});
+
+});
+
 describe("apiClient - obtenerPedido", () => {
+
     it("obtiene un pedido por su ID", async () => {
         const mockPedido = {
             id: "1",
@@ -102,5 +156,46 @@ describe("apiClient - obtenerPedido", () => {
 
         expect(pedido).toEqual(mockPedido);
     });
+    
+it("informa cuando el pedido no existe", async () => {
+    server.use(
+        http.get(`${PEDIDOS_URL}/999`, () =>
+            HttpResponse.json(
+                { error: "Pedido no encontrado" },
+                { status: 404 },
+            ),
+        ),
+    );
+
+    await expect(obtenerPedido("999")).rejects.toThrow(
+        "Pedido no encontrado",
+    );
+});
+
+it("informa un error 500 del servidor", async () => {
+    server.use(
+        http.get(`${PEDIDOS_URL}/1`, () =>
+            HttpResponse.json(
+                { error: "Error interno del servidor" },
+                { status: 500 },
+            ),
+        ),
+    );
+
+    await expect(obtenerPedido("1")).rejects.toThrow(
+        "Error interno del servidor",
+    );
+});
+
+it("informa un error cuando falla la conexión", async () => {
+    server.use(
+        http.get(`${PEDIDOS_URL}/1`, () => HttpResponse.error()),
+    );
+
+    await expect(obtenerPedido("1")).rejects.toThrow(
+        "Error de conexión con el servidor",
+    );
+});
+
 });
 });
