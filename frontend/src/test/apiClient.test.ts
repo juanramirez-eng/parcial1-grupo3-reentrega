@@ -77,4 +77,30 @@ describe("apiClient - crearPedido", () => {
         expect(pedido).toEqual(mockPedido);
     });
 });
+describe("apiClient - obtenerPedido", () => {
+    it("obtiene un pedido por su ID", async () => {
+        const mockPedido = {
+            id: "1",
+            mesaId: 4,
+            items: [
+                {
+                    productoId: "1",
+                    cantidad: 2,
+                },
+            ],
+            estado: "pendiente",
+            total: 10040,
+        };
+
+        server.use(
+            http.get(`${PEDIDOS_URL}/1`, () =>
+                HttpResponse.json(mockPedido),
+            ),
+        );
+
+        const pedido = await obtenerPedido("1");
+
+        expect(pedido).toEqual(mockPedido);
+    });
+});
 });
