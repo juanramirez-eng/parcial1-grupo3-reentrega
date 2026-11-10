@@ -27,6 +27,12 @@ export default function ConfirmarPedido() {
       <p>
         Subtotal: ${subtotal.toLocaleString("es-AR")}
       </p>
+      {items.length > 0 && (
+  <button type="button">
+    Confirmar pedido
+  </button>
+)}
     </section>
+ 
   );
 }
