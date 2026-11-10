@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { CartProvider, useCart } from './CartContext'
+import { CartProvider, useCart } from '../carrito/CartContext'
 
 const cafe = { productoId: '1', nombre: 'Expreso', precio: 1500 }
 
