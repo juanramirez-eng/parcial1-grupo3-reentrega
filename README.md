@@ -1,10 +1,12 @@
-# parcial1-grupo3-reentrega · API Cafetería Origen
+# parcial1-grupo3-reentrega · Cafetería Origen
 
-API desarrollada en TypeScript con Express para gestionar productos, pedidos y reportes de una cafetería.
+Proyecto desarrollado en TypeScript que integra una API REST con Express y un frontend en React para gestionar productos, pedidos y reportes de una cafetería.
 
-El proyecto fue desarrollado aplicando TDD, separando los ciclos rojo, verde y refactor en commits independientes.
+El desarrollo se realizó aplicando TDD, manteniendo commits separados para los ciclos rojo y verde.
 
 ## Tecnologías
+
+### Backend
 
 - Node.js
 - TypeScript
@@ -12,43 +14,86 @@ El proyecto fue desarrollado aplicando TDD, separando los ciclos rojo, verde y r
 - Vitest
 - Supertest
 
+### Frontend
+
+- React
+- TypeScript
+- Vite
+- Zod
+- Bootstrap
+- Sass
+- Vitest
+- React Testing Library
+- MSW
+- Playwright
+
 ## Instalación
 
-Clonar el repositorio e instalar dependencias:
+Clonar el repositorio e instalar las dependencias del backend:
 
 ```bash
 npm install
 ```
 
-## Ejecutar tests
+Luego instalar las dependencias del frontend:
 
 ```bash
-npm test
-```
-
-También se puede ejecutar Vitest en modo watch:
-
-```bash
-npm run test:watch
+cd frontend
+npm install
 ```
 
 ## Ejecutar la API
+
+Desde la raíz del proyecto:
 
 ```bash
 npm start
 ```
 
-Por defecto, el servidor se ejecuta en:
+La API se ejecuta en:
 
 ```text
 http://localhost:3000
 ```
 
-## Funcionalidades
+## Ejecutar el frontend
 
-### Productos
+Desde la carpeta `frontend`:
 
-Permite consultar el catálogo completo de productos y obtener un producto por ID.
+```bash
+npm run dev
+```
+
+La aplicación se ejecuta en:
+
+```text
+http://localhost:5173
+```
+
+Para abrir la aplicación asociada a una mesa:
+
+```text
+http://localhost:5173/?mesa=4
+```
+
+El número de mesa se obtiene desde el parámetro `mesa` de la URL.
+
+## Flujo principal
+
+El usuario puede:
+
+1. ingresar mediante una URL con `?mesa=N`;
+2. consultar el catálogo obtenido desde la API;
+3. seleccionar productos;
+4. agregarlos al carrito;
+5. revisar el subtotal estimado;
+6. confirmar el pedido;
+7. recibir el número de pedido;
+8. consultar su estado y total desde la API.
+
+El frontend utiliza los precios informados por el backend y no recalcula el precio real de los productos.
+
+## Productos
 
 Endpoints:
 
@@ -67,9 +112,7 @@ curl http://localhost:3000/productos
 curl http://localhost:3000/productos/1
 ```
 
-#### Contrato de un producto
-
-`GET /productos` devuelve una lista y `GET /productos/:id` devuelve un producto. Los cafés (`tipo` `expreso` o `filtrado`) incluyen `tamano` y `variedad`:
+Ejemplo de producto café:
 
 ```json
 {
@@ -86,20 +129,29 @@ curl http://localhost:3000/productos/1
 }
 ```
 
-La pastelería (`tipo` `pasteleria`) no tiene `tamano` ni `variedad`:
+Ejemplo de pastelería:
 
 ```json
-{ "id": "19", "tipo": "pasteleria", "nombre": "Muffin de chocolate", "precioBase": 2500, "precio": 2500 }
+{
+  "id": "19",
+  "tipo": "pasteleria",
+  "nombre": "Muffin de chocolate",
+  "precioBase": 2500,
+  "precio": 2500
+}
 ```
 
-- `precio` es el resultado de `calcularPrecio()`: el front no lo recalcula.
-- `tamano`: `pocillo`, `mediano` o `taza grande`.
-- `variedad.nombre`: `Colombia`, `Etiopia` o `Brasil`.
-- Un id inexistente responde `404` con `{ "error": "Producto no encontrado" }`.
+Un producto inexistente responde:
 
-### Pedidos
+```json
+{
+  "error": "Producto no encontrado"
+}
+```
 
-Permite crear pedidos, listar todos los pedidos y consultar uno por ID.
+con estado HTTP `404`.
+
+## Pedidos
 
 Endpoints:
 
@@ -109,23 +161,38 @@ GET /pedidos
 GET /pedidos/:id
 ```
 
-Ejemplo para crear un pedido:
+Ejemplo:
 
 ```bash
 curl -X POST http://localhost:3000/pedidos \
   -H "Content-Type: application/json" \
-  -d "{\"items\":[{\"productoId\":\"1\",\"cantidad\":2}]}"
+  -d "{\"mesaId\":4,\"items\":[{\"productoId\":\"19\",\"cantidad\":1}]}"
 ```
 
-Consultar pedidos:
+Ejemplo de respuesta:
+
+```json
+{
+  "id": "1",
+  "mesaId": 4,
+  "items": [
+    {
+      "productoId": "19",
+      "cantidad": 1
+    }
+  ],
+  "estado": "pendiente",
+  "total": 2500
+}
+```
+
+Consultar un pedido:
 
 ```bash
-curl http://localhost:3000/pedidos
+curl http://localhost:3000/pedidos/1
 ```
 
-### Reportes
-
-Permite consultar la facturación acumulada y los productos más vendidos.
+## Reportes
 
 Endpoints:
 
@@ -134,7 +201,7 @@ GET /reportes/facturacion
 GET /reportes/mas-vendidos
 ```
 
-Ejemplo:
+Ejemplos:
 
 ```bash
 curl http://localhost:3000/reportes/facturacion
@@ -144,35 +211,50 @@ curl http://localhost:3000/reportes/facturacion
 curl http://localhost:3000/reportes/mas-vendidos
 ```
 
-## Flujo integrado
+Pedidos y reportes utilizan la misma instancia de `PedidoService`, por lo que los reportes trabajan con los pedidos creados previamente.
 
-La aplicación comparte las mismas instancias de catálogo, repositorio de pedidos y servicios entre los distintos routers.
+## Endpoints de soporte para E2E
 
-Esto permite que un pedido creado mediante:
-
-```text
-POST /pedidos
-```
-
-sea utilizado posteriormente por:
+Cuando el backend se ejecuta con:
 
 ```text
-GET /reportes/facturacion
-GET /reportes/mas-vendidos
+NODE_ENV=test
 ```
 
-El flujo completo está cubierto por pruebas de integración con Supertest.
+se habilitan:
+
+```text
+POST /__test__/reset
+POST /__test__/seed
+```
+
+`reset` limpia los pedidos y reinicia la secuencia de IDs.
+
+`seed` deja disponible el catálogo conocido utilizado durante las pruebas E2E.
+
+Estos endpoints son utilizados por Playwright antes de ejecutar el flujo completo.
 
 ## Manejo de errores
 
-La API contempla, entre otros casos:
+La API responde errores con el formato:
+
+```json
+{
+  "error": "mensaje"
+}
+```
+
+Se contemplan casos como:
 
 - producto inexistente;
 - pedido inexistente;
-- items inválidos al crear un pedido;
+- ID de pedido inválido;
+- lista de items inválida;
+- cantidades inválidas;
+- mesa inválida;
 - rutas inexistentes.
 
-Una ruta inexistente devuelve:
+Una ruta inexistente responde:
 
 ```json
 {
@@ -180,68 +262,170 @@ Una ruta inexistente devuelve:
 }
 ```
 
+## Comunicación frontend - backend
+
+Durante desarrollo se utiliza el proxy de Vite para redirigir:
+
+```text
+/productos
+/pedidos
+/reportes
+/__test__
+```
+
+hacia:
+
+```text
+http://localhost:3000
+```
+
+De esta forma el frontend puede comunicarse con la API sin problemas de CORS durante desarrollo y pruebas E2E.
+
+## Validación de contratos
+
+Las respuestas del backend son validadas en el frontend mediante Zod.
+
+Si una respuesta no respeta el contrato esperado, el cliente informa un error en lugar de utilizar datos inválidos.
+
+## Estado del menú
+
+La carga del menú utiliza un estado discriminado:
+
+```text
+cargando
+error
+listo
+```
+
+Esto permite representar de forma explícita cada estado de la petición.
+
+## Carrito
+
+El carrito se administra mediante React Context y `useReducer`.
+
+Permite:
+
+- agregar productos;
+- aumentar cantidades;
+- disminuir cantidades;
+- quitar productos;
+- vaciar el carrito;
+- obtener un subtotal estimado.
+
+El total definitivo del pedido siempre lo calcula el backend.
+
+## Bootstrap y Sass
+
+El frontend utiliza Bootstrap personalizado mediante Sass.
+
+Las variables principales se definen antes de importar Bootstrap:
+
+```scss
+$primary: #6f4e37;
+$secondary: #d9c2a7;
+$body-bg: #f8f5f1;
+$body-color: #2f2a26;
+```
+
+## Tests del backend
+
+Desde la raíz:
+
+```bash
+npm test
+```
+
+Estado actual:
+
+```text
+15 archivos de test
+83 tests
+```
+
+## Tests del frontend
+
+Desde `frontend`:
+
+```bash
+npm test
+```
+
+Incluye pruebas unitarias, de componentes e integración con MSW.
+
+Estado actual:
+
+```text
+12 archivos de test
+67 tests
+```
+
+## E2E
+
+Desde `frontend`:
+
+```bash
+npm run test:e2e
+```
+
+Playwright levanta automáticamente:
+
+- backend con `NODE_ENV=test`;
+- frontend con Vite.
+
+Antes de cada prueba ejecuta:
+
+```text
+POST /__test__/reset
+POST /__test__/seed
+```
+
+El flujo E2E valida:
+
+```text
+abrir mesa
+→ cargar productos
+→ elegir producto
+→ agregar al carrito
+→ confirmar pedido
+→ visualizar número de pedido
+→ visualizar estado
+→ visualizar total
+```
+
+## Build del frontend
+
+Desde `frontend`:
+
+```bash
+npm run build
+```
+
+El comando ejecuta TypeScript y genera el bundle de producción con Vite.
+
 ## TDD
 
-Se utilizó el ciclo:
+Durante el desarrollo se utilizó:
 
 ```text
 Rojo → Verde → Refactor
 ```
 
-Reglas utilizadas durante el desarrollo:
+Reglas aplicadas:
 
 - primero se escribe el test;
-- se ejecuta y se verifica que falle por el comportamiento esperado;
-- el test rojo se guarda en un commit independiente;
-- se implementa únicamente el código necesario para hacerlo pasar;
+- se verifica que falle por el comportamiento esperado;
+- el rojo se guarda en un commit independiente;
+- se implementa únicamente lo necesario para hacerlo pasar;
 - se vuelve a ejecutar la suite;
-- el código verde se guarda en otro commit;
-- los refactors se realizan con todos los tests en verde;
-- los PR se integran sin squash para preservar el historial de TDD.
+- el verde se guarda en otro commit;
+- los refactors se realizan con los tests en verde;
+- los PR se integran sin squash para conservar el historial.
 
-Ejemplo de convención de commits:
-
-```text
-test: comportamiento esperado (rojo)
-feat: implementar comportamiento (verde)
-refactor: mejorar implementación
-fix: corregir integración o configuración
-```
-
-## Ramas de trabajo
-
-Durante el desarrollo se utilizaron ramas independientes para cada funcionalidad:
+Ejemplo del flujo E2E:
 
 ```text
-feat/productos
-feat/catalogo
-feat/pedidos
-feat/reportes
-feat/integracion
-```
-
-Los cambios se integraron a `main` mediante Pull Requests.
-
-## Pruebas de integración
-
-Además de los tests unitarios y de routers, se agregó una prueba de integración que valida el flujo:
-
-```text
-Consultar productos
-       ↓
-Crear pedido
-       ↓
-Consultar facturación
-```
-
-Esto verifica que los módulos de catálogo, pedidos y reportes funcionen correctamente en conjunto.
-
-## Ejecutar una prueba específica
-
-Por ejemplo, para ejecutar únicamente el test de integración:
-
-```bash
-npx vitest run tests/integracion.test.ts
+test: definir flujo E2E de pedido completo (rojo)
+feat: completar flujo E2E de pedido (verde)
 ```
 
 ## Estructura principal
@@ -257,13 +441,63 @@ src/
 └── server.ts
 
 tests/
-├── productos
-├── catálogo
-├── pedidos
-├── reportes
-└── integración
+└── tests del backend
+
+frontend/
+├── e2e/
+├── src/
+│   ├── api/
+│   ├── carrito/
+│   ├── components/
+│   ├── hooks/
+│   ├── menu/
+│   ├── mesa/
+│   ├── schemas/
+│   ├── services/
+│   └── test/
+├── playwright.config.ts
+├── vite.config.ts
+└── package.json
 ```
 
-## Estado del proyecto
+## Comandos principales
 
-La API cuenta con pruebas unitarias, pruebas de routers y pruebas de integración para validar el comportamiento de los principales módulos del sistema.
+Backend:
+
+```bash
+npm install
+npm start
+npm test
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
+npm test
+npm run test:e2e
+npm run build
+```
+
+## Estado actual
+
+El proyecto cuenta con:
+
+- API de productos;
+- creación y consulta de pedidos;
+- reportes;
+- integración entre pedidos y reportes;
+- frontend React;
+- lectura de mesa desde URL;
+- catálogo;
+- carrito;
+- confirmación de pedido;
+- validación con Zod;
+- Bootstrap con Sass;
+- pruebas unitarias;
+- pruebas de componentes;
+- pruebas de integración;
+- prueba E2E con Playwright;
+- endpoints de soporte para pruebas.
