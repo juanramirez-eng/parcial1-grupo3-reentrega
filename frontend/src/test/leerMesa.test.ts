@@ -12,4 +12,11 @@ describe('leerMesa', () => {
   it.each(['abc', '0', '-1', '2.5', ''])('devuelve null si mesa es "%s"', (valor) => {
     expect(leerMesa(`http://localhost:5173/?mesa=${valor}`)).toBeNull()
   })
+    it('devuelve null si no hay parametro mesa', () => {
+    expect(leerMesa('http://localhost:5173/')).toBeNull()
+  })
+
+  it.each(['abc', '0', '-1', '2.5', ''])('devuelve null si mesa es "%s"', (valor) => {
+    expect(leerMesa(`http://localhost:5173/?mesa=${valor}`)).toBeNull()
+  })
 })
