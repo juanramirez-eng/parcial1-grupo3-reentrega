@@ -33,7 +33,7 @@ type Props = {
     onAgregar: (cafe: ProductoCafe) => void;
 };
 
-export function SelectorCafe({ productos }: Props) {
+export function SelectorCafe({ productos, onAgregar }: Props) {
     const [bebida, setBebida] = useState<Bebida | null>(null);
     const [tamano, setTamano] = useState<Tamano | null>(null);
     const [origen, setOrigen] = useState<Origen | null>(null);
@@ -109,7 +109,7 @@ export function SelectorCafe({ productos }: Props) {
                 })}
             </fieldset>
 
-            <button type="button" disabled={cafeElegido === undefined}>
+            <button type="button" disabled={cafeElegido === undefined} onClick={() => cafeElegido && onAgregar(cafeElegido)}>  
                 Agregar al carrito
             </button>
         </section>
