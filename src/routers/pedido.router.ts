@@ -1,3 +1,4 @@
+
 import { Router } from "express";
 import type { PedidoService } from "../services/pedido.service.js";
 
@@ -7,7 +8,7 @@ export function createPedidoRouter(servicio: PedidoService): Router {
   // POST /pedidos
   router.post("/", (req, res) => {
     try {
-      const { items } = req.body;
+      const { items, mesaId } = req.body;
 
       if (!Array.isArray(items)) {
         return res.status(400).json({
@@ -15,27 +16,37 @@ export function createPedidoRouter(servicio: PedidoService): Router {
         });
       }
 
-      const pedido = servicio.crearPedido(items);
+      const pedido = servicio.crearPedido(items, mesaId);
 
       return res.status(201).json(pedido);
     } catch (error) {
-      return res.status(400).json({
-        error:
-          error instanceof Error
-            ? error.message
-            : "Error al crear el pedido",
-      });
+      const mensaje =
+        error instanceof Error
+          ? error.message
+          : "Error al crear el pedido";
+
+      const status = mensaje === "El producto no existe" ? 404 : 400;
+
+      return res.status(status).json({ error: mensaje });
     }
   });
 
   // GET /pedidos
   router.get("/", (_req, res) => {
-    return res.json(servicio.listarPedidos());
+    return res.status(200).json(servicio.listarPedidos());
   });
 
   // GET /pedidos/:id
   router.get("/:id", (req, res) => {
-    const pedido = servicio.buscarPorId(req.params.id);
+    const id = req.params.id;
+
+    if (!/^\d+$/.test(id)) {
+      return res.status(400).json({
+        error: "El ID del pedido debe ser numérico",
+      });
+    }
+
+    const pedido = servicio.buscarPorId(id);
 
     if (!pedido) {
       return res.status(404).json({
@@ -43,7 +54,7 @@ export function createPedidoRouter(servicio: PedidoService): Router {
       });
     }
 
-    return res.json(pedido);
+    return res.status(200).json(pedido);
   });
 
   return router;
