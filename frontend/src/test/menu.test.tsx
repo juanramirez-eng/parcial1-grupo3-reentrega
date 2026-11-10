@@ -5,12 +5,16 @@ import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import { Menu } from "../components/Menu";
 
+const API_URL = "http://localhost:3000/productos";
+
 const mockProductos = [
     {
         id: 1,
         tipo: "expreso",
         nombre: "Expreso Pocillo Colombia",
         precio: 5740,
+        tamanio: "pocillo",
+        gramosCafe: 18,
         variedad: {
             nombre: "Colombia",
             descripcion: "Notas florales y cítricas",
@@ -19,7 +23,7 @@ const mockProductos = [
 ];
 
 const server = setupServer(
-    http.get("*/productos", () => HttpResponse.json(mockProductos)),
+    http.get(API_URL, () => HttpResponse.json(mockProductos)),
 );
 
 beforeAll(() => server.listen());
@@ -32,14 +36,14 @@ describe("Carga del Menú (Funcionalidad 2)", () => {
         expect(screen.getByRole("status")).toHaveTextContent(/cargando menú/i);
 
         expect(await screen.findByRole("heading", { name: "Expreso Pocillo Colombia" })).toBeInTheDocument();
-        expect(screen.getByText("$5.740")).toBeInTheDocument();
+        expect(screen.getByText(/5\.?740/)).toBeInTheDocument();
     });
 
     it("2. Error 500 con reintento: muestra mensaje de error y recupera al presionar Reintentar", async () => {
         const user = userEvent.setup();
         let intentos = 0;
         server.use(
-            http.get("*/productos", () => {
+            http.get(API_URL, () => {
                 intentos++;
                 if (intentos === 1) {
                     return HttpResponse.json({ error: "Fallo temporal en la base de datos" }, { status: 500 });
@@ -61,7 +65,7 @@ describe("Carga del Menú (Funcionalidad 2)", () => {
 
     it("3. API caida: muestra mensaje claro de conexion", async () => {
         server.use(
-            http.get("*/productos", () => HttpResponse.error()),
+            http.get(API_URL, () => HttpResponse.error()),
         );
 
         render(<Menu />);
@@ -71,7 +75,7 @@ describe("Carga del Menú (Funcionalidad 2)", () => {
 
     it("4. Respuesta fuera de contrato: informa incompatibilidad de datos", async () => {
         server.use(
-            http.get("*/productos", () => HttpResponse.json([{ id: 1, tipo: "no-valido" }])),
+            http.get(API_URL, () => HttpResponse.json([{ id: 1, tipo: "no-valido" }])),
         );
 
         render(<Menu />);

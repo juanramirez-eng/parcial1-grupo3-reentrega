@@ -1,4 +1,5 @@
 import { useMenu } from "../hooks/useMenu";
+import { formatearPrecio } from "../utils/format";
 
 interface MenuProps {
     onSeleccionarProducto?: (id: string | number) => void;
@@ -10,7 +11,7 @@ export function Menu({ onSeleccionarProducto }: MenuProps) {
     if (estado.estado === "cargando") {
         return (
             <div role="status" aria-live="polite" className="text-center p-4">
-                <span className="spinner-border text-primary" role="status" />
+                <span className="spinner-border text-primary" aria-hidden="true" />
                 <p className="mt-2">Cargando menú...</p>
             </div>
         );
@@ -47,7 +48,7 @@ export function Menu({ onSeleccionarProducto }: MenuProps) {
                             )}
                         </div>
                         <div className="d-flex align-items-center gap-2">
-                            <span className="fw-bold">${prod.precio.toLocaleString("es-AR")}</span>
+                            <span className="fw-bold">{formatearPrecio(prod.precio)}</span>
                             {onSeleccionarProducto && (
                                 <button
                                     type="button"
