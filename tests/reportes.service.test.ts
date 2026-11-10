@@ -61,5 +61,47 @@ describe("ReportesService", () => {
     });
   });
 
-  // (acá van a ir los próximos bloques)
+    describe("Producto más vendido", () => {
+    it("devuelve el producto con mayor cantidad acumulada entre pedidos", () => {
+      pedidos.crearPedido([
+        { productoId: "1", cantidad: 3 },
+        { productoId: "19", cantidad: 2 },
+      ]);
+      pedidos.crearPedido([{ productoId: "19", cantidad: 2 }]);
+
+      expect(reportes.masVendidos()).toEqual([
+        { productoId: 19, nombre: "Muffin de chocolate", cantidad: 4 },
+      ]);
+    });
+
+    it("decide por cantidad vendida y no por cantidad de pedidos", () => {
+      pedidos.crearPedido([{ productoId: "2", cantidad: 1 }]);
+      pedidos.crearPedido([{ productoId: "2", cantidad: 1 }]);
+      pedidos.crearPedido([{ productoId: "20", cantidad: 5 }]);
+
+      expect(reportes.masVendidos()).toEqual([
+        { productoId: 20, nombre: "Porción de torta selva negra", cantidad: 5 },
+      ]);
+    });
+
+    it("devuelve todos los productos empatados", () => {
+      pedidos.crearPedido([
+        { productoId: "19", cantidad: 2 },
+        { productoId: "1", cantidad: 3 },
+      ]);
+      pedidos.crearPedido([
+        { productoId: "2", cantidad: 1 },
+        { productoId: "19", cantidad: 1 },
+      ]);
+
+      expect(reportes.masVendidos()).toEqual([
+        { productoId: 1, nombre: "Expreso Brasil pocillo", cantidad: 3 },
+        { productoId: 19, nombre: "Muffin de chocolate", cantidad: 3 },
+      ]);
+    });
+
+    it("devuelve una lista vacía si no hay ventas", () => {
+      expect(reportes.masVendidos()).toEqual([]);
+    });
+  });
 });
