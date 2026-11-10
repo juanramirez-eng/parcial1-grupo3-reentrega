@@ -36,4 +36,34 @@ describe('SelectorCafe', () => {
         await user.click(screen.getByRole('radio', { name: /colombia/i }))
         expect(boton).toBeEnabled()
     })
+
+    it('no muestra precios hasta elegir bebida y tamano', async () => {
+        const { user } = renderizarSelector()
+        expect(screen.queryByText(/\$\d/)).not.toBeInTheDocument()
+
+        await user.click(screen.getByRole('radio', { name: 'Expreso' }))
+        expect(screen.queryByText(/\$\d/)).not.toBeInTheDocument()
+    })
+
+    it('muestra el precio de cada origen al elegir bebida y tamano', async () => {
+        const { user } = renderizarSelector()
+        await user.click(screen.getByRole('radio', { name: 'Expreso' }))
+        await user.click(screen.getByRole('radio', { name: 'Mediano' }))
+
+        expect(screen.getByText('$6.280')).toBeInTheDocument()
+        expect(screen.getByText('$7.360')).toBeInTheDocument()
+        expect(screen.getByText('$8.980')).toBeInTheDocument()
+    })
+
+    it('actualiza los precios al cambiar la bebida', async () => {
+        const { user } = renderizarSelector()
+        await user.click(screen.getByRole('radio', { name: 'Expreso' }))
+        await user.click(screen.getByRole('radio', { name: 'Mediano' }))
+        await user.click(screen.getByRole('radio', { name: 'Filtrado' }))
+
+        expect(screen.getByText('$5.300')).toBeInTheDocument()
+        expect(screen.getByText('$5.900')).toBeInTheDocument()
+        expect(screen.getByText('$6.800')).toBeInTheDocument()
+        expect(screen.queryByText('$7.360')).not.toBeInTheDocument()
+    })
 })
