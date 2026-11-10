@@ -15,5 +15,8 @@ export function carritoReducer(items: ItemCarrito[], accion: AccionCarrito): Ite
         .filter((i) => i.cantidad > 0)
     default:
       return items
+
+          case 'quitar':
+      return items.filter((i) => i.productoId !== accion.productoId)
   }
 }
