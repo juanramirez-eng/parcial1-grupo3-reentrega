@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { carritoReducer } from '../carrito/carritoReducer'
+import { carritoReducer, subtotal } from '../carrito/carritoReducer'
 import type { ItemCarrito, ProductoCarrito } from '../carrito/carrito.types'
 
 const cafe: ProductoCarrito = { productoId: '1', nombre: 'Expreso', precio: 1500 }
@@ -35,4 +35,13 @@ describe('carritoReducer', () => {
     const resultado = carritoReducer([{ ...cafe, cantidad: 2 }], { tipo: 'vaciar' })
     expect(resultado).toEqual([])
   })
+  describe('subtotal', () => {
+  it('es 0 con el carrito vacio', () => {
+    expect(subtotal([])).toBe(0)
+  })
+
+  it('suma precio por cantidad de cada item', () => {
+    expect(subtotal([{ ...cafe, cantidad: 2 }, { ...medialuna, cantidad: 3 }])).toBe(5400)
+  })
+})
 })
