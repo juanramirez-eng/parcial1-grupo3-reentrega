@@ -17,4 +17,13 @@ describe('carritoReducer', () => {
     expect(resultado).toEqual([{ ...cafe, cantidad: 2 }])
     expect(estado).toEqual([{ ...cafe, cantidad: 1 }]) // reducer puro
   })
+    it('restar decrementa la cantidad', () => {
+    const resultado = carritoReducer([{ ...cafe, cantidad: 2 }], { tipo: 'restar', productoId: '1' })
+    expect(resultado).toEqual([{ ...cafe, cantidad: 1 }])
+  })
+
+  it('restar elimina el item cuando la cantidad llega a 0', () => {
+    const resultado = carritoReducer([{ ...cafe, cantidad: 1 }], { tipo: 'restar', productoId: '1' })
+    expect(resultado).toEqual([])
+  })
 })
