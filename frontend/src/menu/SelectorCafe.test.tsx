@@ -66,4 +66,15 @@ describe('SelectorCafe', () => {
         expect(screen.getByText('$6.800')).toBeInTheDocument()
         expect(screen.queryByText('$7.360')).not.toBeInTheDocument()
     })
+
+    it('llama a onAgregar con el cafe elegido', async () => {
+        const { user, onAgregar } = renderizarSelector()
+        await user.click(screen.getByRole('radio', { name: 'Expreso' }))
+        await user.click(screen.getByRole('radio', { name: 'Mediano' }))
+        await user.click(screen.getByRole('radio', { name: /colombia/i }))
+        await user.click(screen.getByRole('button', { name: /agregar al carrito/i }))
+
+        expect(onAgregar).toHaveBeenCalledTimes(1)
+        expect(onAgregar).toHaveBeenCalledWith(expect.objectContaining({ id: '5', precio: 7360 }))
+    })
 })
