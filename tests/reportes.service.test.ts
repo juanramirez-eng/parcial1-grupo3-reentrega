@@ -43,5 +43,23 @@ describe("ReportesService", () => {
     });
   });
 
+    describe("Facturación", () => {
+    it("acumula el total de varios pedidos", () => {
+      // 2 x 5020 + 5740 = 15780
+      pedidos.crearPedido([
+        { productoId: "1", cantidad: 2 },
+        { productoId: "2", cantidad: 1 },
+      ]);
+      // 3 x 2500 = 7500
+      pedidos.crearPedido([{ productoId: "19", cantidad: 3 }]);
+
+      expect(reportes.facturacion()).toBe(23280);
+    });
+
+    it("es 0 si no hay ventas", () => {
+      expect(reportes.facturacion()).toBe(0);
+    });
+  });
+
   // (acá van a ir los próximos bloques)
 });
