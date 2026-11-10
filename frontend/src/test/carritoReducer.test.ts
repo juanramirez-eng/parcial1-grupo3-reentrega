@@ -31,4 +31,8 @@ describe('carritoReducer', () => {
     const resultado = carritoReducer(estado, { tipo: 'quitar', productoId: '1' })
     expect(resultado).toEqual([{ ...medialuna, cantidad: 1 }])
   })
+    it('vaciar deja el carrito sin items', () => {
+    const resultado = carritoReducer([{ ...cafe, cantidad: 2 }], { tipo: 'vaciar' })
+    expect(resultado).toEqual([])
+  })
 })
