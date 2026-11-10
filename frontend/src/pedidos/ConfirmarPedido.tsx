@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useCart } from "../carrito/CartContext";
 import { crearPedido, type Pedido } from "../services/apiClient";
 import { leerMesa } from "../mesa/leerMesa";
+import SeguimientoPedido from "./SeguimientoPedido";
 
 export default function ConfirmarPedido() {
   const { items, subtotal, vaciar } = useCart();
@@ -40,17 +41,17 @@ export default function ConfirmarPedido() {
   }
 
   if (pedido) {
-    return (
-      <section>
-        <h2>¡Pedido confirmado!</h2>
+  return (
+    <section>
+      <h2>¡Pedido confirmado!</h2>
+      <p>Número de pedido: {pedido.id}</p>
+      <p>Estado: {pedido.estado}</p>
+      <p>Total: ${pedido.total.toLocaleString("es-AR")}</p>
 
-        <p>Número de pedido: {pedido.id}</p>
-        <p>Estado: {pedido.estado}</p>
-        <p>
-          Total: ${pedido.total.toLocaleString("es-AR")}
-        </p>
-      </section>
-    );
+      <SeguimientoPedido pedidoId={pedido.id} />
+    </section>
+  );
+
   }
 
   return (
