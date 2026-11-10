@@ -51,4 +51,25 @@ describe("ConfirmarPedido", () => {
 
     expect(screen.getByText(/17\.220/)).toBeInTheDocument();
   });
+
+  
+it("no permite confirmar cuando el carrito está vacío", () => {
+  mockUseCart.mockReturnValue({
+    items: [],
+    subtotal: 0,
+    sumar: vi.fn(),
+    restar: vi.fn(),
+    quitar: vi.fn(),
+    vaciar: vi.fn(),
+  });
+
+  render(<ConfirmarPedido />);
+
+  expect(screen.getByText("El carrito está vacío")).toBeInTheDocument();
+
+  expect(
+    screen.queryByRole("button", { name: /confirmar pedido/i })
+  ).not.toBeInTheDocument();
+});
+
 });
