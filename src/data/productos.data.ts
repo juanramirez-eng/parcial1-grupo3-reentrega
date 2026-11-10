@@ -13,11 +13,13 @@ function generarCafes(
 ): Cafe[] {
     const cafes: Cafe[] = [];
     let id = idInicial;
+
     for (const tamano of TAMANOS) {
         for (const variedad of VARIEDADES) {
             cafes.push(new TipoCafe(String(id++), tamano, variedad));
         }
     }
+
     return cafes;
 }
 

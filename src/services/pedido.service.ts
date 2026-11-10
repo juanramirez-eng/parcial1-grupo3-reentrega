@@ -3,6 +3,7 @@ import type { Pedido, ItemPedido } from "../models/pedido.model.js";
 import { PedidoRepository } from "../repositories/pedido.repository.js";
 import type { CatalogoService } from "./catalogo.service.js";
 
+
 export class PedidoService {
   constructor(
     private catalogo: CatalogoService,
