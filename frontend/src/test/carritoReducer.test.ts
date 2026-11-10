@@ -26,4 +26,9 @@ describe('carritoReducer', () => {
     const resultado = carritoReducer([{ ...cafe, cantidad: 1 }], { tipo: 'restar', productoId: '1' })
     expect(resultado).toEqual([])
   })
+    it('quitar elimina el item completo sin importar la cantidad', () => {
+    const estado = [{ ...cafe, cantidad: 3 }, { ...medialuna, cantidad: 1 }]
+    const resultado = carritoReducer(estado, { tipo: 'quitar', productoId: '1' })
+    expect(resultado).toEqual([{ ...medialuna, cantidad: 1 }])
+  })
 })
