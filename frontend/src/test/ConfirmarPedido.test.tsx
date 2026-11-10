@@ -119,4 +119,46 @@ describe("ConfirmarPedido", () => {
 
     expect(mockVaciar).toHaveBeenCalled();
   });
+
+  it("muestra el número, estado y total devueltos por la API", async () => {
+    render(<ConfirmarPedido />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /confirmar pedido/i })
+    );
+
+    expect(
+      await screen.findByText(/Número de pedido: 15/)
+    ).toBeInTheDocument();
+
+    expect(screen.getByText(/Estado: pendiente/)).toBeInTheDocument();
+
+    expect(screen.getByText(/Total: \$17\.220/)).toBeInTheDocument();
+  });
+
+  it("muestra el error del servidor y conserva el carrito si falla el pedido", async () => {
+    mockCrearPedido.mockRejectedValueOnce(
+      new Error("Stock insuficiente")
+    );
+
+    render(<ConfirmarPedido />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /confirmar pedido/i })
+    );
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Stock insuficiente"
+    );
+
+    expect(mockVaciar).not.toHaveBeenCalled();
+
+    expect(
+      screen.getByText("Expreso mediano - Colombia")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Muffin de chocolate")
+    ).toBeInTheDocument();
+  });
 });
