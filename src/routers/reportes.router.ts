@@ -9,5 +9,11 @@ export function createReportesRouter(reportesService: ReportesService): Router {
     return res.status(200).json({ facturacion: reportesService.facturacion() });
   });
 
+
+    // GET /reportes/mas-vendidos
+  router.get("/mas-vendidos", (_req, res) => {
+    return res.status(200).json(reportesService.masVendidos());
+  });
+
   return router;
 }
