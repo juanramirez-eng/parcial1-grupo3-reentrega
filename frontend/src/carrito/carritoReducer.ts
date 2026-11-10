@@ -19,3 +19,7 @@ export function carritoReducer(items: ItemCarrito[], accion: AccionCarrito): Ite
       return []
   }
 }
+
+export function subtotal(items: ItemCarrito[]): number {
+  return items.reduce((total, i) => total + i.precio * i.cantidad, 0)
+}
