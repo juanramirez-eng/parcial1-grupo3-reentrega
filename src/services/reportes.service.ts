@@ -23,4 +23,12 @@ export class ReportesService {
 
     return cantidades;
   }
+
+    // Total facturado: suma de los totales de todos los pedidos
+  facturacion(): number {
+    return this.pedidos
+      .listarPedidos()
+      .reduce((acumulado, pedido) => acumulado + pedido.total, 0);
+  }
+
 }
