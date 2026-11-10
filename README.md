@@ -67,6 +67,36 @@ curl http://localhost:3000/productos
 curl http://localhost:3000/productos/1
 ```
 
+#### Contrato de un producto
+
+`GET /productos` devuelve una lista y `GET /productos/:id` devuelve un producto. Los cafés (`tipo` `expreso` o `filtrado`) incluyen `tamano` y `variedad`:
+
+```json
+{
+  "id": "5",
+  "tipo": "expreso",
+  "nombre": "Expreso mediano Colombia",
+  "precioBase": 2500,
+  "tamano": "mediano",
+  "variedad": {
+    "nombre": "Colombia",
+    "descripcion": "Acidez media, cuerpo equilibrado y notas cítricas y florales"
+  },
+  "precio": 7360
+}
+```
+
+La pastelería (`tipo` `pasteleria`) no tiene `tamano` ni `variedad`:
+
+```json
+{ "id": "19", "tipo": "pasteleria", "nombre": "Muffin de chocolate", "precioBase": 2500, "precio": 2500 }
+```
+
+- `precio` es el resultado de `calcularPrecio()`: el front no lo recalcula.
+- `tamano`: `pocillo`, `mediano` o `taza grande`.
+- `variedad.nombre`: `Colombia`, `Etiopia` o `Brasil`.
+- Un id inexistente responde `404` con `{ "error": "Producto no encontrado" }`.
+
 ### Pedidos
 
 Permite crear pedidos, listar todos los pedidos y consultar uno por ID.
