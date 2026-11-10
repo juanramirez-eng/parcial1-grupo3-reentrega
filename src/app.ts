@@ -23,6 +23,18 @@ app.use("/productos", catalogoRouter);
 app.use("/pedidos", createPedidoRouter(pedidoService));
 app.use("/reportes", createReportesRouter(reportesService));
 
+
+if (process.env.NODE_ENV === "test") {
+  app.post("/__test__/reset", (_req, res) => {
+    pedidoService.limpiarPedidos();
+    return res.status(204).send();
+  });
+
+  app.post("/__test__/seed", (_req, res) => {
+    return res.status(204).send();
+  });
+}
+
 app.use((_req, res) => {
   res.status(404).json({
     error: "Ruta no encontrada",
