@@ -52,7 +52,7 @@ export class ReportesService {
       .sort(([idA], [idB]) => idA - idB)
       .map(([productoId, cantidad]) => ({
         productoId,
-        nombre: this.catalogo.obtenerPorId(productoId)?.nombre ?? "",
+        nombre: this.catalogo.obtenerPorId(String(productoId))?.nombre ?? "",
         cantidad,
       }));
   }
