@@ -11,4 +11,8 @@ export class CatalogoService {
     obtenerTodos(): Producto[] {
         return Array.from(this.productos.values());
     }
+
+    obtenerPorId(id: string): Producto | undefined {
+        return this.productos.get(id);
+    }
 }
